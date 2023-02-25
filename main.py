@@ -25,7 +25,7 @@ def main():
     while True:
         if datetime.today().weekday() < 5:
             while start_time < current_time < end_time:
-                if current_time.tm_min is 00 and email_sent is False:
+                if current_time.tm_min is 00 and email_sent == False:
                     email_sent = check_bus(bus_number, scraped_data)
 
 
@@ -56,7 +56,7 @@ signal(SIGKILL, send_exit_message)
 
 
 def check_bus(bus_number, scraped_data):
-    if bus_number in scraped_data is True:
+    if bus_number in scraped_data == True:
         notify("Schoolbus Disruption", "Eliza's bus isn't running.")
         return True
 
