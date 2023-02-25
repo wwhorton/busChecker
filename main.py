@@ -5,7 +5,6 @@ import requests
 import yagmail
 from datetime import datetime
 import atexit
-from signal import signal, SIGINT, SIGTERM, SIGKILL
 
 
 def main():
@@ -23,10 +22,14 @@ def main():
     send_start_message(current_time_formatted)
 
     while True:
-        if datetime.today().weekday() < 5:
-            while start_time < current_time < end_time:
-                if current_time.tm_min is 00 and email_sent == False:
-                    email_sent = check_bus(bus_number, scraped_data)
+        try:
+            if datetime.today().weekday() < 5:
+                while start_time < current_time < end_time:
+                    if current_time.tm_min == 00 and email_sent is False:
+                        email_sent = check_bus(bus_number, scraped_data)
+        except (KeyboardInterrupt, SystemExit):
+            print("Exiting...")
+            break
 
 
 def notify(subject, status):
@@ -47,16 +50,11 @@ def send_start_message(msg_time):
 
 @atexit.register
 def send_exit_message():
-    notify("Bus Checker exited", "Bus Checker exited at " + time.localtime().strftime("%H:%M"))
-
-
-signal(SIGINT, send_exit_message)
-signal(SIGTERM, send_exit_message)
-signal(SIGKILL, send_exit_message)
+    notify("Bus Checker exited", "Bus Checker exited at " + time.strftime("%H:%M", time.localtime()))
 
 
 def check_bus(bus_number, scraped_data):
-    if bus_number in scraped_data == True:
+    if bus_number in scraped_data:
         notify("Schoolbus Disruption", "Eliza's bus isn't running.")
         return True
 
