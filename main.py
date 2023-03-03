@@ -1,4 +1,5 @@
 # Main file for busChecker app
+from bs4 import BeautifulSoup
 import time
 import yagmail
 from datetime import datetime
@@ -18,7 +19,7 @@ def main():
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(bus_schedule_url)
 
-    scraped_data = driver.find_element(By.TAG_NAME, "table")
+    scraped_data = BeautifulSoup(driver.find_element(By.TAG_NAME, "table").get_attribute("innerHTML"), 'html.parser')
 
     email_sent = False
     time_format = "%H:%M"
@@ -64,7 +65,9 @@ def send_exit_message():
 def check_bus(bus_number, scraped_data):
 
     if bus_number in scraped_data.text:
-        notify("Schoolbus Disruption", "Eliza's bus isn't running.")
+        am_pm = scraped_data.find("td", string=bus_number)\
+            .find_next_sibling("td").find_next_sibling("td").find_next_sibling("td")
+        notify("Schoolbus Disruption", f"Eliza's bus isn't running in the {am_pm}.")
         return True
 
 
