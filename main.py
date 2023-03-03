@@ -1,17 +1,25 @@
 # Main file for busChecker app
-from bs4 import BeautifulSoup
 import time
-import requests
 import yagmail
 from datetime import datetime
 import atexit
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 
 def main():
     bus_number = "408"
     bus_schedule_url = "https://busstops.aacps.org/public/BusRouteIssues.aspx"
-    page = requests.get(bus_schedule_url)
-    scraped_data = BeautifulSoup(page.text, 'html.parser')
+
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get(bus_schedule_url)
+
+    scraped_data = driver.find_element(By.TAG_NAME, "table")
+
     email_sent = False
     time_format = "%H:%M"
     current_time = time.localtime()
@@ -54,7 +62,8 @@ def send_exit_message():
 
 
 def check_bus(bus_number, scraped_data):
-    if bus_number in scraped_data:
+
+    if bus_number in scraped_data.text:
         notify("Schoolbus Disruption", "Eliza's bus isn't running.")
         return True
 

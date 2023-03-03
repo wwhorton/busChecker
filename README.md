@@ -14,4 +14,6 @@ It runs as a terminal process and exits gracefully on CTRL+C.
 - Testing
 - GUI
 - Allow for separate admin and notification email addresses, so that launch and quit is sent to one address but notifications are sent to the other
+- Use Selenium for more reliable page rendering
+- Specify AM, PM, or both
 
